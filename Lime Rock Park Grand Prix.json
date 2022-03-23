@@ -2,12 +2,20 @@
     "debug": true,
     "notes": [
        {
-            "percent": 10,  
-            "note": "brake 3 gear 2"
+            "percent": 100,  
+            "note": "brake 3, gear 2"
+       },
+       {
+           "percent": 20,
+           "note": "stay in gear 2"
+       },
+       {
+           "percent": 55,
+           "note": "gear 3, no brake"
        },
        {
            "percent": 70,
-           "note": "gear 4 hard to apex"
+           "note": "gear 4, hard to apex"
        }
     ]
 }
