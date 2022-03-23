@@ -1,0 +1,13 @@
+{
+    "debug": true,
+    "notes": [
+       {
+            "percent": 10,  
+            "note": "brake 3 gear 2"
+       },
+       {
+           "percent": 70,
+           "note": "gear 4 hard to apex"
+       }
+    ]
+}
