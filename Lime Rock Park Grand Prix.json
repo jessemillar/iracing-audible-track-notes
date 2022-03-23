@@ -1,20 +1,24 @@
 {
     "notes": [
        {
-            "percent": 100,  
-            "note": "brake 3, gear 2"
-       },
-       {
-           "percent": 20,
+           "percent": 15,
            "note": "stay in gear 2"
        },
        {
-           "percent": 55,
-           "note": "gear 3, no brake"
+           "percent": 40,
+           "note": "brake just before left kerb, gear 1"
+       },
+       {
+           "percent": 60,
+           "note": "gear 3"
        },
        {
            "percent": 70,
            "note": "gear 4, hard to apex"
+       },
+       {
+            "percent": 95,  
+            "note": "brake just past 3, gear 2"
        }
     ]
 }
