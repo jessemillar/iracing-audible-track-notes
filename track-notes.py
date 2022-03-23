@@ -12,10 +12,14 @@ from pathlib import Path
 import os
 from os.path import exists
 
+# TODO Handle notes at close to 100% more reliably
+# TODO Don't read notes in pit lane
+
 # this is our State class, with some helpful variables
 class State:
     ir_connected = False
-    lastAnnouncedPercent = 200 # Set to something higher than 100 as the "null" value
+    lastAnnouncedPercent = -1 # Set to something lower than 0 as the "null" value
+    laps = 0
     notes = []
 
 # here we check if we are connected to iracing
@@ -24,7 +28,8 @@ def check_iracing():
     if state.ir_connected and not (ir.is_initialized and ir.is_connected):
         state.ir_connected = False
         # don't forget to reset your State variables
-        state.lastAnnouncedPercent = 200
+        state.lastAnnouncedPercent = -1
+        state.laps = 0
         # we are shutting down ir library (clearing all internal variables)
         ir.shutdown()
         print('irsdk disconnected', flush=True)
@@ -60,15 +65,24 @@ def loop():
             f.close()
     except ValueError:  # includes simplejson.decoder.JSONDecodeError
         print("Check JSON", flush=True)
+
+    if ir['Lap']:
+        if ir['Lap'] != state.laps:
+            state.laps = ir['Lap'] 
+            state.lastAnnouncedPercent = -1
         
     if ir['LapDistPct']:
         percent = int(ir['LapDistPct'] * 100)
         #print(percent, flush=True)
 
+        if percent == 0:
+            state.lastAnnouncedPercent = -1
+
         if state.notes:
             for note in state.notes['notes']:
                 if note.get('percent') and note.get('note'):
-                    if state.lastAnnouncedPercent <= note['percent'] and note['percent'] <= percent:
+                    #print(percent, note, flush=True)
+                    if state.lastAnnouncedPercent != note['percent'] and state.lastAnnouncedPercent <= note['percent'] and note['percent'] <= percent:
                         state.lastAnnouncedPercent = note['percent']
                         converter.say(note['note'])
                         converter.runAndWait()
