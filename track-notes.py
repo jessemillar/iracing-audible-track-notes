@@ -8,6 +8,9 @@ import irsdk
 import time
 import pyttsx3
 import json
+from pathlib import Path
+import os
+from os.path import exists
 
 # this is our State class, with some helpful variables
 class State:
@@ -44,7 +47,13 @@ def loop():
     try:
         if ir['WeekendInfo']:
             trackName = ir['WeekendInfo']['TrackDisplayName'] + " " + ir['WeekendInfo']['TrackConfigName']
-            f = open(trackName+'.json')
+            trackFile = Path('notes/'+trackName+'.json')
+            if not exists(trackFile) or os.path.getsize(trackFile) == 0:
+                print("File is empty", flush=True)
+                f = open(trackFile, 'w') 
+                f.write('{\n\t"notes": []\n}')
+                f.close()
+            f = open(trackFile) 
             jsonFile = json.load(f)
             if jsonFile is not None:
                 state.notes = jsonFile
@@ -56,16 +65,19 @@ def loop():
         percent = int(ir['LapDistPct'] * 100)
         #print(percent, flush=True)
 
-        for note in state.notes['notes']:
-            if note['percent'] == percent:
-                converter.say(note['note'])
-                converter.runAndWait()
+        if state.notes:
+            for note in state.notes['notes']:
+                if note.get('percent') and note.get('note'):
+                    if state.lastAnnouncedPercent <= note['percent'] and note['percent'] <= percent:
+                        state.lastAnnouncedPercent = note['percent']
+                        converter.say(note['note'])
+                        converter.runAndWait()
 
-        if state.notes['debug'] == True:
-            if percent % 10 == 0 and percent != state.lastAnnouncedPercent:
-                state.lastAnnouncedPercent = percent
-                converter.say(str(percent) + "percent")
-                converter.runAndWait()
+        #if state.notes['debug'] == True:
+            #if percent % 10 == 0 and percent != state.lastAnnouncedPercent:
+                #state.lastAnnouncedPercent = percent
+                #converter.say(str(percent) + "percent")
+                #converter.runAndWait()
 
 if __name__ == '__main__':
     # initializing ir and state
